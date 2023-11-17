@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
 
 namespace DentalApi.Models;
 
@@ -23,7 +25,9 @@ public partial class Acompañante
 
     public DateTime FechaModificacion { get; set; }
 
+    [JsonIgnore]
     public virtual Cliente ClienteAcompañadoNavigation { get; set; } = null!;
 
+    [JsonIgnore]
     public virtual Telefono TelefonoNavigation { get; set; } = null!;
 }
