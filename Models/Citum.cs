@@ -29,14 +29,14 @@ public partial class Citum
     public bool? Pagado { get; set; }
 
     [JsonIgnore]
-    public virtual Cliente ClienteNavigation { get; set; } = null!;
+    public virtual Cliente? ClienteNavigation { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual Dentistum DentistaNavigation { get; set; } = null!;
+    public virtual Dentistum? DentistaNavigation { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual ICollection<Pago> Pagos { get; set; } = new List<Pago>();
+    public virtual ICollection<Pago>? Pagos { get; set; } = new List<Pago>();
 
     [JsonIgnore]
-    public virtual TipoCitum TipoCitaNavigation { get; set; } = null!;
+    public virtual TipoCitum? TipoCitaNavigation { get; set; } = null!;
 }

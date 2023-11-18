@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -9,7 +10,8 @@ public partial class TipoCitum
 
     public string Tipocita { get; set; } = null!;
 
-    public virtual ICollection<Citum> Cita { get; set; } = new List<Citum>();
-
-    public virtual ICollection<SolicitudCitum> SolicitudCita { get; set; } = new List<SolicitudCitum>();
+    [JsonIgnore]
+    public virtual ICollection<Citum>? Cita { get; set; } = new List<Citum>();
+    [JsonIgnore]
+    public virtual ICollection<SolicitudCitum>? SolicitudCita { get; set; } = new List<SolicitudCitum>();
 }

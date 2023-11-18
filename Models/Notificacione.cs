@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -21,5 +22,6 @@ public partial class Notificacione
 
     public byte Estado { get; set; }
 
-    public virtual Usuario UsuarioNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Usuario? UsuarioNavigation { get; set; } = null!;
 }

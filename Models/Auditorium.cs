@@ -24,5 +24,5 @@ public partial class Auditorium
     public DateTime FechaModificacion { get; set; }
 
     [JsonIgnore]
-    public virtual Usuario UsuarioNavigation { get; set; } = null!;
+    public virtual Usuario? UsuarioNavigation { get; set; } = null!;
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -16,6 +17,6 @@ public partial class SeguimientoTratamiento
     public DateTime FechaCreacion { get; set; }
 
     public DateTime FechaModificacion { get; set; }
-
-    public virtual PacienteTratamiento PacienteTratamientoNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual PacienteTratamiento? PacienteTratamientoNavigation { get; set; } = null!;
 }

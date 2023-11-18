@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -15,5 +16,6 @@ public partial class TipoPago
 
     public bool Activo { get; set; }
 
-    public virtual ICollection<Pago> Pagos { get; set; } = new List<Pago>();
+    [JsonIgnore]
+    public virtual ICollection<Pago>? Pagos { get; set; } = new List<Pago>();
 }

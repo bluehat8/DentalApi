@@ -11,7 +11,7 @@ public partial class Telefono
     public string Numero { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual ICollection<Acompañante> Acompañantes { get; set; } = new List<Acompañante>();
+    public virtual ICollection<Acompañante>? Acompañantes { get; set; } = new List<Acompañante>();
     [JsonIgnore]
-    public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
+    public virtual ICollection<Usuario>? Usuarios { get; set; } = new List<Usuario>();
 }

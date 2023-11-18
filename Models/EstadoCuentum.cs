@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -18,6 +19,6 @@ public partial class EstadoCuentum
     public decimal Monto { get; set; }
 
     public decimal Total { get; set; }
-
-    public virtual Cliente ClienteNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Cliente? ClienteNavigation { get; set; } = null!;
 }

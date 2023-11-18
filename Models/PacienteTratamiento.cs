@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -23,9 +24,10 @@ public partial class PacienteTratamiento
 
     public bool? Estado { get; set; }
 
-    public virtual HistorialClinico HistorialMedicoNavigation { get; set; } = null!;
-
-    public virtual ICollection<SeguimientoTratamiento> SeguimientoTratamientos { get; set; } = new List<SeguimientoTratamiento>();
-
-    public virtual Tratamiento TratamientoNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual HistorialClinico? HistorialMedicoNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual ICollection<SeguimientoTratamiento>? SeguimientoTratamientos { get; set; } = new List<SeguimientoTratamiento>();
+    [JsonIgnore]
+    public virtual Tratamiento? TratamientoNavigation { get; set; } = null!;
 }
