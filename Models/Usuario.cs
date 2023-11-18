@@ -33,26 +33,26 @@ public partial class Usuario
     public DateTime FechaModificacion { get; set; }
 
     [JsonIgnore]
-    public virtual ICollection<Asistente> Asistentes { get; set; } = new List<Asistente>();
+    public virtual ICollection<Asistente>? Asistentes { get; set; } = new List<Asistente>();
 
     [JsonIgnore]
-    public virtual ICollection<Auditorium> Auditoria { get; set; } = new List<Auditorium>();
+    public virtual ICollection<Auditorium>? Auditoria { get; set; } = new List<Auditorium>();
 
     [JsonIgnore]
-    public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
+    public virtual ICollection<Cliente>? Clientes { get; set; } = new List<Cliente>();
 
     [JsonIgnore]
-    public virtual ICollection<Dentistum> Dentista { get; set; } = new List<Dentistum>();
+    public virtual ICollection<Dentistum>? Dentista { get; set; } = new List<Dentistum>();
 
     [JsonIgnore]
-    public virtual ICollection<Mensaje> MensajeUsuariordestinatarioNavigations { get; set; } = new List<Mensaje>();
+    public virtual ICollection<Mensaje>? MensajeUsuariordestinatarioNavigations { get; set; } = new List<Mensaje>();
 
     [JsonIgnore]
-    public virtual ICollection<Mensaje> MensajeUsuarioremitenteNavigations { get; set; } = new List<Mensaje>();
+    public virtual ICollection<Mensaje>? MensajeUsuarioremitenteNavigations { get; set; } = new List<Mensaje>();
 
     [JsonIgnore]
-    public virtual ICollection<Notificacione> Notificaciones { get; set; } = new List<Notificacione>();
+    public virtual ICollection<Notificacione>? Notificaciones { get; set; } = new List<Notificacione>();
 
     [JsonIgnore]
-    public virtual Telefono TelefonoNavigation { get; set; } = null!;
+    public virtual Telefono? TelefonoNavigation { get; set; } = null!;
 }
