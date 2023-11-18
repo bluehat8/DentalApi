@@ -6,78 +6,72 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using DentalApi.HelperModels;
 
-
 namespace DentalApi.Controllers
 {
 
-
     [Route("api/[controller]")]
     [ApiController]
-
-    public class ClienteController : ControllerBase
+    public class AcompañanteController : ControllerBase 
     {
-
         private readonly DentalContext _context;
 
-        private bool ClienteExists(int id)
+        private bool AcompañanteExists(int id)
         {
-            return _context.Clientes.Any(s => s.Id.Equals(id));
+            return _context.Acompañantes.Any(s => s.Id.Equals(id));
         }
 
-        public ClienteController(DentalContext context)
+        public AcompañanteController(DentalContext context)
         {
             _context = context;
             _context.setConnectionString();
         }
 
-      
+
         [HttpGet]
-        [Route("ListarClientes")]
-        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
+        [Route("ListarAcompañante")]
+        public async Task<ActionResult<IEnumerable<Acompañante>>> GetAcompañantes()
         {
             var options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve
             };
 
-            var _Clientes = await _context.Clientes.ToListAsync();
+            var _Acompañante = await _context.Acompañantes.ToListAsync();
 
-            return Ok(_Clientes);
+            return Ok(_Acompañante);
         }
 
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cliente>> GetCLiente(int _id)
+        public async Task<ActionResult<Acompañante>> GetAcompañante(int _id)
         {
-            var _Cliente = await _context.Clientes.FirstOrDefaultAsync(m => m.Id == _id);
+            var _Acompañante = await _context.Acompañantes.FirstOrDefaultAsync(m => m.Id == _id);
 
-            if (_Cliente == null)
+            if (_Acompañante == null)
             {
                 return NotFound();
             }
 
-            return _Cliente;
+            return _Acompañante;
         }
 
-
         [HttpPost]
-        public async Task<ActionResult<Cliente>> CreateCliente(Cliente C)
+        public async Task<ActionResult<Acompañante>> CreateAcompañante(Acompañante acompañante)
         {
-            _context.Clientes.Add(C);
+            _context.Acompañantes.Add(acompañante);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCLiente), new { id = C.Id }, C);
+            return CreatedAtAction(nameof(GetAcompañante), new { id = acompañante.Id }, acompañante);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCliente(int id, Cliente c)
+        public async Task<IActionResult> UpdateAcompañante(int id, Acompañante acompañante)
         {
-            if (id != c.Id)
+            if (id != acompañante.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(c).State = EntityState.Modified;
+            _context.Entry(acompañante).State = EntityState.Modified;
 
             try
             {
@@ -85,7 +79,7 @@ namespace DentalApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClienteExists(id))
+                if (!AcompañanteExists(id))
                 {
                     return NotFound();
                 }
@@ -100,19 +94,18 @@ namespace DentalApi.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCLiente(int id)
+        public async Task<IActionResult> DeleteAcompañante(int id)
         {
-            var C = await _context.Clientes.FindAsync(id);
-            if (C == null)
+            var A = await _context.Acompañantes.FindAsync(id);
+            if (A == null)
             {
                 return NotFound();
             }
 
-            _context.Clientes.Remove(C);
+            _context.Acompañantes.Remove(A);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
-
     }
 }
