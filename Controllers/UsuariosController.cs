@@ -19,7 +19,6 @@ namespace DentalApi.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly DentalContext _context;
-        private Encriptado objCifrado;
 
         public UsuariosController(DentalContext context)
         {
@@ -62,7 +61,7 @@ namespace DentalApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Usuario>> CreateUsuario(Usuario usuario)
         {
-            usuario.Contraseña = objCifrado.EncryptPassword(usuario.Contraseña);
+            usuario.Contraseña = Encriptado.EncryptPassword(usuario.Contraseña);
 
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();

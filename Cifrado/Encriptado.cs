@@ -4,9 +4,9 @@ using System.Text;
 
 namespace DentalApi.Cifrado
 {
-    public class Encriptado
+    public static class Encriptado
     {
-        public string EncryptPassword(string _Contraseña)
+        public static string EncryptPassword(string _Contraseña)
         {
             using (SHA256 sha256Hash = SHA256.Create())
             {
