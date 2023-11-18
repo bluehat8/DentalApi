@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -17,7 +18,11 @@ public partial class Mensaje
 
     public DateTime FechaModificacion { get; set; }
 
-    public virtual Usuario UsuariordestinatarioNavigation { get; set; } = null!;
 
-    public virtual Usuario UsuarioremitenteNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Usuario? UsuariordestinatarioNavigation { get; set; } = null!;
+
+    [JsonIgnore] 
+    public virtual Usuario? UsuarioremitenteNavigation { get; set; } = null!;
+
 }
