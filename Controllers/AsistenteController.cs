@@ -56,5 +56,61 @@ namespace DentalApi.Controllers
         }
 
 
+        [HttpPost]
+        public async Task<ActionResult<Asistente>> CreateAsistente(Asistente A)
+        {
+            _context.Asistentes.Add(A);
+            await _context.SaveChangesAsync();
+            
+            return CreatedAtAction(nameof(GetAsistente), new { id = A.Id }, A);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsistente(int id,Asistente A)
+        {
+            if (id != A.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(A).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AsistenteExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsistente(int id)
+        {
+            var A = await _context.Asistentes.FindAsync(id);
+            if (A == null)
+            {
+                return NotFound();
+            }
+
+            _context.Asistentes.Remove(A);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
     }
 }
