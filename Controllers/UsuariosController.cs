@@ -35,7 +35,7 @@ namespace DentalApi.Controllers
                 ReferenceHandler = ReferenceHandler.Preserve
             };
 
-            var usuarios = await _context.Usuarios
+            var usuarios = await _context.Usuarios.Where(s =>s.Activo)
                 .ToListAsync();
 
             return Ok(usuarios);
