@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -14,6 +15,6 @@ public partial class Cuota
     public DateTime FechaCreacion { get; set; }
 
     public DateTime FechaModificada { get; set; }
-
-    public virtual Comprobante IdComprobanteNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Comprobante? IdComprobanteNavigation { get; set; } = null!;
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -25,7 +26,8 @@ public partial class SolicitudCitum
 
     public bool Activo { get; set; }
 
-    public virtual Cliente Paciente { get; set; } = null!;
-
-    public virtual TipoCitum TipoCitaNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Cliente? Paciente { get; set; } = null!;
+    [JsonIgnore]
+    public virtual TipoCitum? TipoCitaNavigation { get; set; } = null!;
 }

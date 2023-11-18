@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -9,5 +10,6 @@ public partial class TipoTratamiento
 
     public string Tipotratamiento1 { get; set; } = null!;
 
-    public virtual ICollection<Tratamiento> Tratamientos { get; set; } = new List<Tratamiento>();
+    [JsonIgnore]
+    public virtual ICollection<Tratamiento>? Tratamientos { get; set; } = new List<Tratamiento>();
 }

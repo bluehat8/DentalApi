@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -49,7 +50,8 @@ public partial class HistorialClinico
 
     public DateTime FechaModificacion { get; set; }
 
-    public virtual Cliente PacienteNavigation { get; set; } = null!;
-
-    public virtual ICollection<PacienteTratamiento> PacienteTratamientos { get; set; } = new List<PacienteTratamiento>();
+    [JsonIgnore]
+    public virtual Cliente? PacienteNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual ICollection<PacienteTratamiento>? PacienteTratamientos { get; set; } = new List<PacienteTratamiento>();
 }

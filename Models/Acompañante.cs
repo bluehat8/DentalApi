@@ -26,8 +26,8 @@ public partial class Acompañante
     public DateTime FechaModificacion { get; set; }
 
     [JsonIgnore]
-    public virtual Cliente ClienteAcompañadoNavigation { get; set; } = null!;
+    public virtual Cliente? ClienteAcompañadoNavigation { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual Telefono TelefonoNavigation { get; set; } = null!;
+    public virtual Telefono? TelefonoNavigation { get; set; } = null!;
 }

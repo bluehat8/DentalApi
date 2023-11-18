@@ -14,7 +14,7 @@ public partial class Dentistum
     public int? Especialidad { get; set; }
 
     [JsonIgnore]
-    public virtual ICollection<Citum> Cita { get; set; } = new List<Citum>();
+    public virtual ICollection<Citum>? Cita { get; set; } = new List<Citum>();
     [JsonIgnore]
     public virtual Especialidad? EspecialidadNavigation { get; set; }
     [JsonIgnore]

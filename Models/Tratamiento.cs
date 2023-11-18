@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -27,7 +28,9 @@ public partial class Tratamiento
 
     public DateTime FechaModificacion { get; set; }
 
-    public virtual ICollection<PacienteTratamiento> PacienteTratamientos { get; set; } = new List<PacienteTratamiento>();
+    [JsonIgnore]
+    public virtual ICollection<PacienteTratamiento>? PacienteTratamientos { get; set; } = new List<PacienteTratamiento>();
 
-    public virtual TipoTratamiento TipoTratamientoNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual TipoTratamiento? TipoTratamientoNavigation { get; set; } = null!;
 }

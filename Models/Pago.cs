@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
 
@@ -27,11 +28,12 @@ public partial class Pago
 
     public bool Estado { get; set; }
 
-    public virtual Citum CitaNavigation { get; set; } = null!;
-
-    public virtual Cliente ClienteNavigation { get; set; } = null!;
-
-    public virtual ICollection<Comprobante> Comprobantes { get; set; } = new List<Comprobante>();
-
-    public virtual TipoPago TipoPagoNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Citum? CitaNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Cliente? ClienteNavigation { get; set; } = null!;
+    [JsonIgnore]
+    public virtual ICollection<Comprobante>? Comprobantes { get; set; } = new List<Comprobante>();
+    [JsonIgnore]
+    public virtual TipoPago? TipoPagoNavigation { get; set; } = null!;
 }
