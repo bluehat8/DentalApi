@@ -6,78 +6,76 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using DentalApi.HelperModels;
 
-
 namespace DentalApi.Controllers
 {
-
 
     [Route("api/[controller]")]
     [ApiController]
 
-    public class ClienteController : ControllerBase
+    public class TelefonoController : ControllerBase
     {
-
         private readonly DentalContext _context;
 
-        private bool ClienteExists(int id)
+        private bool TelefonoExists(int id)
         {
-            return _context.Clientes.Any(s => s.Id.Equals(id));
+            return _context.Telefonos.Any(s => s.Id.Equals(id));
         }
 
-        public ClienteController(DentalContext context)
+        public TelefonoController(DentalContext context)
         {
             _context = context;
             _context.setConnectionString();
         }
 
-      
+
         [HttpGet]
-        [Route("ListarClientes")]
-        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
+        [Route("ListarTelefonos")]
+        public async Task<ActionResult<IEnumerable<Telefono>>> GetTelefonos()
         {
             var options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve
             };
 
-            var _Clientes = await _context.Clientes.ToListAsync();
+            var _Telefonos = await _context.Telefonos.ToListAsync();
 
-            return Ok(_Clientes);
+            return Ok(_Telefonos);
         }
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cliente>> GetCLiente(int _id)
+        public async Task<ActionResult<Telefono>> GetTelefono(int _id)
         {
-            var _Cliente = await _context.Clientes.FirstOrDefaultAsync(m => m.Id == _id);
+            var _Telefono = await _context.Telefonos.FirstOrDefaultAsync(m => m.Id.Equals(_id));
 
-            if (_Cliente == null)
+            if (_Telefono == null)
             {
                 return NotFound();
             }
 
-            return _Cliente;
+            return _Telefono;
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<Usuario>> CreateCliente(Cliente C)
+        public async Task<ActionResult<Telefono>> CreateTelefono(Telefono T)
         {
-            _context.Clientes.Add(C);
+            _context.Telefonos.Add(T);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCLiente), new { id = C.Id }, C);
+            return CreatedAtAction(nameof(GetTelefono), new { id = T.Id }, T);
         }
 
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCliente(int id, Cliente c)
+        public async Task<IActionResult> UpdateTelefono(int id, Telefono T)
         {
-            if (id != c.Id)
+            if (id != T.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(c).State = EntityState.Modified;
+            _context.Entry(T).State = EntityState.Modified;
 
             try
             {
@@ -85,7 +83,7 @@ namespace DentalApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClienteExists(id))
+                if (!TelefonoExists(id))
                 {
                     return NotFound();
                 }
@@ -100,19 +98,20 @@ namespace DentalApi.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCLiente(int id)
+        public async Task<IActionResult> DeleteTelefono(int id)
         {
-            var C = await _context.Clientes.FindAsync(id);
-            if (C == null)
+            var T = await _context.Telefonos.FindAsync(id);
+            if (T == null)
             {
                 return NotFound();
             }
 
-            _context.Clientes.Remove(C);
+            _context.Telefonos.Remove(T);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
 
     }
 }
