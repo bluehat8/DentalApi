@@ -10,7 +10,6 @@ using DentalApi.HelperModels;
 namespace DentalApi.Controllers
 {
 
-
     [Route("api/[controller]")]
     [ApiController]
 
