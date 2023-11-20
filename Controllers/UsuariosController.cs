@@ -126,7 +126,7 @@ namespace DentalApi.Controllers
 
                 if (user != null)
                 {
-                    return Ok(new { user, message = "Inicio de sesión exitoso" });
+                    return Ok(new { response = user, message = "Inicio de sesión exitoso" });
                 }
                 else
                 {
