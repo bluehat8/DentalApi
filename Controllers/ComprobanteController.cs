@@ -19,7 +19,7 @@ namespace DentalApi.Controllers
 
         private readonly DentalContext _context;
 
-        private bool CuotaExists(int id)
+        private bool ComprobanteExists(int id)
         {
             return _context.Comprobantes.Any(s => s.Id.Equals(id));
         }
@@ -40,16 +40,16 @@ namespace DentalApi.Controllers
                 ReferenceHandler = ReferenceHandler.Preserve
             };
 
-            var _C = await _context.Cuotas.ToListAsync();
+            var _C = await _context.Comprobantes.ToListAsync();
 
             return Ok(_C);
         }
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cuota>> GetCuota(int _id)
+        public async Task<ActionResult<Comprobante>> GetComprobante(int _id)
         {
-            var _C = await _context.Cuotas.FirstOrDefaultAsync(m => m.Id == _id);
+            var _C = await _context.Comprobantes.FirstOrDefaultAsync(m => m.Id == _id);
 
             if (_C == null)
             {
@@ -61,16 +61,16 @@ namespace DentalApi.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<Cliente>> CreateCuota(Cuota C)
+        public async Task<ActionResult<Comprobante>> CreateComprobante(Comprobante C)
         {
-            _context.Cuotas.Add(C);
+            _context.Comprobantes.Add(C);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCuota), new { id = C.Id }, C);
+            return CreatedAtAction(nameof(GetComprobante), new { id = C.Id }, C);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCuota(int id, Cuota c)
+        public async Task<IActionResult> UpdateComprobante(int id, Comprobante c)
         {
             if (id != c.Id)
             {
@@ -85,7 +85,7 @@ namespace DentalApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CuotaExists(id))
+                if (!ComprobanteExists(id))
                 {
                     return NotFound();
                 }
@@ -100,15 +100,15 @@ namespace DentalApi.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCuota(int id)
+        public async Task<IActionResult> DeleteComprobante(int id)
         {
-            var C = await _context.Cuotas.FindAsync(id);
+            var C = await _context.Comprobantes.FindAsync(id);
             if (C == null)
             {
                 return NotFound();
             }
 
-            _context.Cuotas.Remove(C);
+            _context.Comprobantes.Remove(C);
             await _context.SaveChangesAsync();
 
             return NoContent();
