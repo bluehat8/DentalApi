@@ -30,6 +30,6 @@ namespace DentalApi.DTOs
 
         public DateTime FechaModificacion { get; set; }
 
-        public int especialidad { get; set; }
+        public int Especialidad { get; set; }
     }
 }

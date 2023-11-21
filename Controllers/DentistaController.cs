@@ -48,7 +48,7 @@ namespace DentalApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Dentistum>> GetDentista(int id)
         {
-            var _Dentista = await _context.Dentista.FirstOrDefaultAsync(m => m.Id.Equals(id));
+            var _Dentista = await _context.Dentista.FirstOrDefaultAsync(m => m.Usuario.Equals(id));
 
             if (_Dentista == null)
             {
