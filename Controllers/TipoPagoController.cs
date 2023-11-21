@@ -6,77 +6,76 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using DentalApi.HelperModels;
 
-
 namespace DentalApi.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
 
-    public class ClienteController : ControllerBase
+    public class TipoPagoController : ControllerBase
     {
-
         private readonly DentalContext _context;
 
-        private bool ClienteExists(int id)
+        private bool TipoPagoExists(int id)
         {
-            return _context.Clientes.Any(s => s.Id.Equals(id));
+            return _context.TipoPagos.Any(s => s.Id.Equals(id));
         }
 
-        public ClienteController(DentalContext context)
+        public TipoPagoController(DentalContext context)
         {
             _context = context;
             _context.setConnectionString();
         }
 
-      
+
         [HttpGet]
-        [Route("ListarClientes")]
-        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
+        [Route("ListarTipoPago")]
+        public async Task<ActionResult<IEnumerable<TipoPago>>> GetTipoPagos()
         {
             var options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve
             };
 
-            var _Clientes = await _context.Clientes.ToListAsync();
+            var _TipoPago = await _context.TipoPagos.ToListAsync();
 
-            return Ok(_Clientes);
+            return Ok(_TipoPago);
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Cliente>> GetCLiente(int _id)
-        {
-            var _Cliente = await _context.Clientes.FirstOrDefaultAsync(m => m.Id == _id);
 
-            if (_Cliente == null)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TipoPago>> GetTipoPago(int _id)
+        {
+            var _TipoPago = await _context.TipoPagos.FirstOrDefaultAsync(m => m.Id.Equals(_id));
+            
+            if (_TipoPago == null)
             {
                 return NotFound();
             }
 
-            return _Cliente;
+            return _TipoPago;
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<Cliente>> CreateCliente(Cliente C)
+        public async Task<ActionResult<TipoPago>> CreateTipoPago(TipoPago tc)
         {
-            _context.Clientes.Add(C);
+            _context.TipoPagos.Add(tc);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCLiente), new { id = C.Id }, C);
+            return CreatedAtAction(nameof(GetTipoPago), new { id = tc.Id }, tc);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCliente(int id, Cliente c)
+        public async Task<IActionResult> UpdateTipoPago(int id, TipoPago tc)
         {
-            if (id != c.Id)
+            if (id != tc.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(c).State = EntityState.Modified;
+            _context.Entry(tc).State = EntityState.Modified;
 
             try
             {
@@ -84,7 +83,7 @@ namespace DentalApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClienteExists(id))
+                if (!TipoPagoExists(id))
                 {
                     return NotFound();
                 }
@@ -97,17 +96,16 @@ namespace DentalApi.Controllers
             return NoContent();
         }
 
-
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCLiente(int id)
+        public async Task<IActionResult> DeleteTipoPago(int id)
         {
-            var C = await _context.Clientes.FindAsync(id);
-            if (C == null)
+            var _tc = await _context.TipoPagos.FindAsync(id);
+            if (_tc == null)
             {
                 return NotFound();
             }
 
-            _context.Clientes.Remove(C);
+            _context.TipoPagos.Remove(_tc);
             await _context.SaveChangesAsync();
 
             return NoContent();
