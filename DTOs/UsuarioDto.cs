@@ -29,5 +29,7 @@ namespace DentalApi.DTOs
         public DateTime FechaCreacion { get; set; }
 
         public DateTime FechaModificacion { get; set; }
+
+        public int especialidad { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using DentalApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace DentalApi.Controllers
 {
@@ -37,7 +38,7 @@ namespace DentalApi.Controllers
                                         {
                                             Id = sc.Id,
                                             Fecha = sc.Fecha,
-                                            Hora = sc.Hora,
+                                            Hora = sc.Hora.ToString(),
                                             TipoCita = sc.TipoCita,
                                             MotivoCita = sc.MotivoCita,
                                             Estado = sc.Estado,
@@ -45,5 +46,43 @@ namespace DentalApi.Controllers
 
             return Ok(solicitudesDto);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SolicitarCita([FromBody] SolicitudCitumDto solicitudDto)
+        {
+            
+                var cliente = await _dbContext.Clientes.FirstOrDefaultAsync(c => c.Usuario == solicitudDto.Userid);
+                if (cliente == null)
+                {
+                    return NotFound("El cliente no existe");
+                }
+
+                var solicitud = new SolicitudCitum
+                {
+                    PacienteId = cliente.Id,
+                    Fecha = solicitudDto.Fecha,
+                    MotivoCita = solicitudDto.MotivoCita,
+                    TipoCita = solicitudDto.TipoCita
+                };
+
+                DateTime fecha = DateTime.ParseExact(solicitudDto.Hora, "HH:mm", CultureInfo.InvariantCulture);
+                TimeSpan hora = fecha.TimeOfDay;
+                solicitud.Hora = hora;
+
+                solicitud.Estado = solicitudDto.Estado;
+                solicitud.FechaCreacion = DateTime.Now;
+                solicitud.FechaModificacion = DateTime.Now;
+                solicitud.Activo = true;
+                _dbContext.SolicitudCita.Add(solicitud);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new { message = "Solicitud enviada correctamente"});
+            }
+
+          
+        
+
     }
 }
+

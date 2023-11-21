@@ -101,6 +101,22 @@ namespace DentalApi.Controllers
                 return NotFound(new { message = "Usuario no encontrado." });
             }
 
+            /*var user = await _context.Usuarios
+                .Include(u => u.Dentista)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user != null && user.Dentista != null && user.Dentista.Any())
+            {
+                var dentistaDelUsuario = user.Dentista.FirstOrDefault(d => d.Id == id);
+
+                if (dentistaDelUsuario != null)
+                {
+                    dentistaDelUsuario.Especialidad = usuario.especialidad;
+
+                    await _context.SaveChangesAsync();
+                }
+            }*/
+
             // Actualizar solo las propiedades que se envían
             existingUsuario.TelefonoNavigation.Numero = usuario.Telefono ?? existingUsuario.TelefonoNavigation.Numero;
             existingUsuario.Apellidos = usuario.Apellidos ?? existingUsuario.Apellidos;
