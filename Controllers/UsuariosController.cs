@@ -10,6 +10,8 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using DentalApi.HelperModels;
 using DentalApi.Cifrado;
+using DentalApi.DTOs;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DentalApi.Controllers
 {
@@ -29,7 +31,7 @@ namespace DentalApi.Controllers
         // GET: api/Usuarios
         [HttpGet]
         [Route("ListarUsuarios")]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<Models.Usuario>>> GetUsuarios()
         {
             var options = new JsonSerializerOptions
             {
@@ -44,9 +46,9 @@ namespace DentalApi.Controllers
 
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        public async Task<ActionResult<UsuarioDto>> GetUsuario(int id)
         {
-            var usuario = await _context.Usuarios
+            var usuario = await _context.Usuarios.Include(u => u.TelefonoNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (usuario == null)
@@ -54,12 +56,29 @@ namespace DentalApi.Controllers
                 return NotFound();
             }
 
-            return usuario;
+            UsuarioDto usuarioDto = new UsuarioDto()
+            {
+                Id = usuario.Id,
+                Nombre = usuario.Nombre,
+                Apellidos = usuario.Apellidos,
+                Username = usuario.Username,
+                Telefono = usuario.TelefonoNavigation.Numero,
+                Contraseña = usuario.Contraseña,
+                Correo = usuario.Correo,
+                FechaCreacion = usuario.FechaCreacion,
+                FechaModificacion = usuario.FechaModificacion,
+                FechaNacimiento = usuario.FechaNacimiento.ToString("yyyy-MM-dd"),
+                Cedula = usuario.Cedula,
+                Rol = usuario.Rol,
+                Activo = usuario.Activo,
+            };
+
+            return usuarioDto;
         }
 
         // POST: api/Usuarios
         [HttpPost]
-        public async Task<ActionResult<Usuario>> CreateUsuario(Usuario usuario)
+        public async Task<ActionResult<Models.Usuario>> CreateUsuario(Usuario usuario)
         {
             usuario.Contraseña = Encriptado.EncryptPassword(usuario.Contraseña);
 
@@ -71,32 +90,46 @@ namespace DentalApi.Controllers
 
         // PUT: api/Usuarios/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUsuario(int id, Usuario usuario)
+        public async Task<IActionResult> UpdateUsuario(int id, UsuarioDto usuario)
         {
-            if (id != usuario.Id)
+            var existingUsuario = await _context.Usuarios
+                .Include(u => u.TelefonoNavigation)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (existingUsuario == null)
             {
-                return BadRequest();
+                return NotFound(new { message = "Usuario no encontrado." });
             }
 
-            _context.Entry(usuario).State = EntityState.Modified;
+            // Actualizar solo las propiedades que se envían
+            existingUsuario.TelefonoNavigation.Numero = usuario.Telefono ?? existingUsuario.TelefonoNavigation.Numero;
+            existingUsuario.Apellidos = usuario.Apellidos ?? existingUsuario.Apellidos;
+            existingUsuario.Nombre = usuario.Nombre ?? existingUsuario.Nombre;
+            existingUsuario.Correo = usuario.Correo ?? existingUsuario.Correo;
+            existingUsuario.Cedula = usuario.Cedula ?? existingUsuario.Cedula;
+            //*existingUsuario.FechaNacimiento = DateTime.Parse(usuario.FechaNacimiento.ToString());
+            existingUsuario.FechaModificacion = DateTime.Now;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(new { message = "Usuario actualizado con éxito." });
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!UsuarioExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Usuario no encontrado." });
                 }
                 else
                 {
                     throw;
                 }
             }
-
-            return NoContent();
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor al actualizar el usuario." });
+            }
         }
 
         // DELETE: api/Usuarios/5
@@ -122,15 +155,34 @@ namespace DentalApi.Controllers
         {
             try
             {
-                var user = await _context.Usuarios.FirstOrDefaultAsync(x => (x.Username == model.UsernameOrEmail || x.Correo == model.UsernameOrEmail) && x.Contraseña == model.Password);
+                var user = await _context.Usuarios
+                            .Include(u => u.TelefonoNavigation) 
+                            .FirstOrDefaultAsync(x => (x.Username == model.UsernameOrEmail || x.Correo == model.UsernameOrEmail) && x.Contraseña == model.Password);
 
                 if (user != null)
                 {
-                    return Ok(new { response = user, message = "Inicio de sesión exitoso" });
+
+                    UsuarioDto usuarioDto = new UsuarioDto() { 
+                        Id= user.Id,
+                        Nombre = user.Nombre,
+                        Apellidos = user.Apellidos,
+                        Username = user.Username,
+                        Telefono = user.TelefonoNavigation.Numero,
+                        Contraseña = user.Contraseña,
+                        Correo = user.Correo,
+                        FechaCreacion = user.FechaCreacion,
+                        FechaModificacion = user.FechaModificacion,
+                        FechaNacimiento = user.FechaNacimiento.ToString("yyyy-MM-dd"),
+                        Cedula = user.Cedula,
+                        Rol = user.Rol,
+                        Activo = user.Activo,
+                    };
+
+                    return Ok(new { response = usuarioDto, message = "Inicio de sesión exitoso" });
                 }
                 else
                 {
-                    return BadRequest(new { message = "Credenciales incorrectas o cuenta no registrada" });
+                    return BadRequest(new {response = user, message = "Credenciales incorrectas o cuenta no registrada" });
                 }
             }
             catch (Exception e)
