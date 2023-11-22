@@ -12,6 +12,7 @@ using DentalApi.HelperModels;
 using DentalApi.Cifrado;
 using DentalApi.DTOs;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using NuGet.Protocol.Plugins;
 
 namespace DentalApi.Controllers
 {
@@ -171,9 +172,11 @@ namespace DentalApi.Controllers
         {
             try
             {
+                string contraseñaCifrada = Encriptado.EncryptPassword(model.Password);
+
                 var user = await _context.Usuarios
                             .Include(u => u.TelefonoNavigation) 
-                            .FirstOrDefaultAsync(x => (x.Username == model.UsernameOrEmail || x.Correo == model.UsernameOrEmail) && x.Contraseña == model.Password);
+                            .FirstOrDefaultAsync(x => (x.Username == model.UsernameOrEmail || x.Correo == model.UsernameOrEmail) && x.Contraseña == contraseñaCifrada);
 
                 if (user != null)
                 {
@@ -210,6 +213,23 @@ namespace DentalApi.Controllers
         private bool UsuarioExists(int id)
         {
             return _context.Usuarios.Any(e => e.Id == id);
+        }
+
+
+        [HttpGet("Contraseña")]
+
+        public async Task<IActionResult> UpdateContraseña()
+        {
+            var existingUsuarios = await _context.Usuarios.ToListAsync();
+
+            foreach (var usuario in existingUsuarios)
+            {
+                usuario.Contraseña = Encriptado.EncryptPassword("1234");
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Finalizado" });
         }
     }
 }
