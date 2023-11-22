@@ -10,6 +10,14 @@
             eliminadoPorDestinatario = 4
         }
 
+        public enum DentalSolicitudCitaStatus
+        {
+            pendiente = 1,
+            aceptada = 2,
+            cancelada = 4,
+            rechazada = 5,
+        }
+
         public enum DentalNotificationsStatusEnum
         {
             pendiente = 1,

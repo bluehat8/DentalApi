@@ -80,8 +80,65 @@ namespace DentalApi.Controllers
                 return Ok(new { message = "Solicitud enviada correctamente"});
             }
 
-          
-        
+
+        [HttpPut("updateSolicitud/{id}")]
+        public async Task<IActionResult> UpdateSolicitudCita(int id, [FromBody] SolicitudCitumDto solicitudDto)
+        {
+
+            var solicitudExiste = await _dbContext.SolicitudCita.FindAsync(id);
+
+            if (solicitudExiste == null)
+            {
+                return NotFound();
+            }
+
+
+            solicitudExiste.Estado = solicitudExiste.Estado;
+            solicitudExiste.MotivoCita = solicitudDto.MotivoCita;
+            solicitudExiste.TipoCita = solicitudDto.TipoCita;
+            solicitudExiste.Fecha = solicitudDto.Fecha;
+
+            DateTime fecha = DateTime.ParseExact(solicitudDto.Hora, "HH:mm", CultureInfo.InvariantCulture);
+            TimeSpan hora = fecha.TimeOfDay;
+            solicitudExiste.Hora = hora;
+
+            solicitudExiste.FechaModificacion = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent();
+
+        }
+
+        [HttpPut("cancelarCita/{id}")]
+        public async Task<IActionResult> CancelarCita(int id)
+        {
+            try
+            {
+                var solicitudCita = await _dbContext.SolicitudCita.FindAsync(id);
+
+                if (solicitudCita == null)
+                {
+                    return NotFound();
+                }
+
+                solicitudCita.Estado = (Int32)Constants.DentalSolicitudCitaStatus.cancelada;
+                solicitudCita.FechaModificacion = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                // Manejar el error de alguna manera, posiblemente devolver un mensaje de error en la respuesta
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
+
 
     }
 }
