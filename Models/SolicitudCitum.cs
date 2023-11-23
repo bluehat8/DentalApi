@@ -20,7 +20,7 @@ public partial class SolicitudCitum
 
     public int TipoCita { get; set; }
 
-    public string MotivoCita { get; set; } = null!;
+    public string? MotivoCita { get; set; } = null!;
 
     public byte Estado { get; set; }
 

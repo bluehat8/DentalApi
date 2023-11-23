@@ -1,4 +1,5 @@
-﻿using DentalApi.Models;
+﻿using DentalApi.DTOs;
+using DentalApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DentalApi.Controllers
@@ -15,13 +16,50 @@ namespace DentalApi.Controllers
         }
 
         [HttpGet("ListarNotificaciones/{usuarioId}")]
-        public ActionResult<IEnumerable<Notificacione>> ListarNotificacionesPorUsuario(int usuarioId)
+        public ActionResult<IEnumerable<NotificacionesDTO>> ListarNotificacionesPorUsuario(int usuarioId)
         {
             var notificaciones = _context.Notificaciones
-                .Where(n => n.Usuario == usuarioId)
-                .ToList();
+                .Where(n => n.Usuario == usuarioId && n.Asunto != "Nueva solicitud de cita").OrderByDescending(n => n.FechaCreacion)
+                .Select(n => new NotificacionesDTO
+                {
+                    Id = n.Id,
+                    Usuario = n.Usuario,
+                    Fecha = n.Fecha,
+                    FechaCreacion = n.FechaCreacion,
+                    FechaModificacion = n.FechaModificacion,
+                    Asunto = n.Asunto,
+                    Cuerpo = n.Cuerpo,
+                    Estado = n.Estado
+                }).ToList();
 
             return Ok(notificaciones);
+        }
+        [HttpGet("ObtenerNotificaciones")]
+        public ActionResult<IEnumerable<NotificacionesDTO>> ListarNotificaciones()
+        {
+            try
+            {
+                var notificaciones = _context.Notificaciones
+                    .OrderByDescending(n => n.FechaCreacion)
+                    .Select(n => new NotificacionesDTO
+                    {
+                        Id = n.Id,
+                        Usuario = n.Usuario,
+                        Fecha = n.Fecha,
+                        FechaCreacion = n.FechaCreacion,
+                        FechaModificacion = n.FechaModificacion,
+                        Asunto = n.Asunto,
+                        Cuerpo = n.Cuerpo,
+                        Estado = n.Estado
+                    })
+                    .Where(n=> n.Asunto == "Nueva solicitud de cita").ToList();
+
+                return Ok(notificaciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
 

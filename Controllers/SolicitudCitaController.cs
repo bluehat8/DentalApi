@@ -48,6 +48,30 @@ namespace DentalApi.Controllers
         }
 
 
+        [HttpGet("getSolicitudesCita")]
+        public async Task<IActionResult> GetSolicitudesCita()
+        {
+            var solicitudesDto = await (from sc in _dbContext.SolicitudCita
+                                        join c in _dbContext.Clientes on sc.PacienteId equals c.Id
+                                        join u in _dbContext.Usuarios on c.Usuario equals u.Id
+                                        select new SolicitudCitumDto
+                                        {
+                                            Userid = u.Id,
+                                            PacienteId = c.Id,
+                                            NombrePaciente = u.Nombre,
+                                            ApellidoPaciente = u.Apellidos,
+                                            Id = sc.Id,
+                                            Fecha = sc.Fecha,
+                                            Hora = sc.Hora.ToString(),
+                                            TipoCita = sc.TipoCita,
+                                            MotivoCita = sc.MotivoCita,
+                                            Estado = sc.Estado,
+                                        }).Where(x => x.Estado != (Int32)Constants.DentalSolicitudCitaStatus.cancelada).ToListAsync();
+
+            return Ok(solicitudesDto);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> SolicitarCita([FromBody] SolicitudCitumDto solicitudDto)
         {
@@ -77,7 +101,24 @@ namespace DentalApi.Controllers
                 _dbContext.SolicitudCita.Add(solicitud);
                 await _dbContext.SaveChangesAsync();
 
-                return Ok(new { message = "Solicitud enviada correctamente"});
+
+                var usuario = await _dbContext.Usuarios.FirstOrDefaultAsync(c => c.Id == solicitudDto.Userid);
+
+                Notificacione notificacion = new Notificacione()
+                {
+                    Usuario = solicitudDto.Userid,
+                    Asunto = "Nueva solicitud de cita",
+                    Fecha = solicitudDto.Fecha,
+                    Cuerpo = $"{usuario.Nombre} {usuario.Apellidos} ha solicitado una nueva cita el {solicitudDto.Fecha}",
+                    Estado = (Int32)Constants.DentalNotificationsStatusEnum.pendiente,
+                    FechaCreacion = DateTime.Now,
+                    FechaModificacion = DateTime.Now,
+                };   
+            
+                _dbContext.Notificaciones.Add(notificacion);
+                await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Solicitud enviada correctamente"});
             }
 
 
@@ -132,11 +173,91 @@ namespace DentalApi.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                // Manejar el error de alguna manera, posiblemente devolver un mensaje de error en la respuesta
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
+        [HttpPut("aceptarCita/{id}")]
+        public async Task<IActionResult> AprobarCita(int id)
+        {
+            try
+            {
+                var solicitudCita = await _dbContext.SolicitudCita.FindAsync(id);
+
+                if (solicitudCita == null)
+                {
+                    return NotFound();
+                }
+
+                solicitudCita.Estado = (Int32)Constants.DentalSolicitudCitaStatus.aceptada;
+                solicitudCita.FechaModificacion = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPut("RechazarCita/{id}")]
+        public async Task<IActionResult> RechazarCita(int id)
+        {
+            try
+            {
+                var solicitudCita = await _dbContext.SolicitudCita.FindAsync(id);
+
+                if (solicitudCita == null)
+                {
+                    return NotFound();
+                }
+
+                solicitudCita.Estado = (Int32)Constants.DentalSolicitudCitaStatus.rechazada;
+                solicitudCita.FechaModificacion = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                var usuario = await _dbContext.SolicitudCita
+                .Where(s => s.Id == id)
+                .Join(
+                    _dbContext.Clientes,
+                    solicitud => solicitud.PacienteId,
+                    cliente => cliente.Id,
+                    (solicitud, cliente) => new { solicitud, cliente }
+                )
+                .Join(
+                    _dbContext.Usuarios,
+                    sc => sc.cliente.Usuario,
+                    usuario => usuario.Id,
+                    (sc, usuario) => usuario
+                )
+                .FirstOrDefaultAsync();
+
+                Notificacione notificacion = new Notificacione()
+                {
+                    Usuario = usuario.Id,
+                    Asunto = "Solicitud aceptada",
+                    Fecha = solicitudCita.Fecha,
+                    Cuerpo = $"Su solicitud de cita por el motivo de {solicitudCita.MotivoCita} ha sido rechazada para el día {solicitudCita.Fecha}. Lo sentimos",
+                    Estado = (Int32)Constants.DentalNotificationsStatusEnum.pendiente,
+                    FechaCreacion = DateTime.Now,
+                    FechaModificacion = DateTime.Now,
+                };
+
+                _dbContext.Notificaciones.Add(notificacion);
+                await _dbContext.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
 
 
 
