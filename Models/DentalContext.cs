@@ -653,7 +653,7 @@ public partial class DentalContext : DbContext
                 .HasMaxLength(400)
                 .IsUnicode(false)
                 .HasColumnName("descripcion");
-            entity.Property(e => e.Duracion).HasColumnName("duracion");
+            entity.Property(e => e.Duracion).HasColumnName("duracion").HasMaxLength(400).IsUnicode(false);
             entity.Property(e => e.Estado).HasColumnName("estado");
             entity.Property(e => e.FechaCreacion)
                 .HasColumnType("datetime")
@@ -662,7 +662,7 @@ public partial class DentalContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("fechaModificacion");
             entity.Property(e => e.Imagen)
-                .HasMaxLength(1)
+                .HasMaxLength(100)
                 .HasColumnName("imagen");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)

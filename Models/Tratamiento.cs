@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace DentalApi.Models;
@@ -10,7 +11,7 @@ public partial class Tratamiento
 
     public string Nombre { get; set; } = null!;
 
-    public TimeSpan Duracion { get; set; }
+    public string? Duracion { get; set; }
 
     public decimal Precio { get; set; }
 
@@ -18,6 +19,7 @@ public partial class Tratamiento
 
     public string Restricciones { get; set; } = null!;
 
+    [MaxLength(100)]
     public byte[] Imagen { get; set; } = null!;
 
     public int TipoTratamiento { get; set; }

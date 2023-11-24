@@ -96,8 +96,8 @@ namespace DentalApi.Controllers
             }
 
             var usuarios = await _context.Usuarios.ToListAsync();
-            // Filtrar usuarios por roles específicos ("Doctor" y "Asistente")
-            var usuariosConRoles = usuarios.Where(u => u.Rol == (Int32)Constants.DentalRole.doctor || u.Rol == (Int32)Constants.DentalRole.asistente).ToList();
+            // Filtrar usuarios por roles específicos ("Asistente")
+            var usuariosConRoles = usuarios.Where(u => u.Rol == (Int32)Constants.DentalRole.asistente).ToList();
 
             return usuariosConRoles;
         }
