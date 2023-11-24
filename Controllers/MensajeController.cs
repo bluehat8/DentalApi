@@ -86,8 +86,25 @@ namespace DentalApi.Controllers
         }
 
         [HttpGet]
+        [Route("ObtenerUsuariosConRoles/{usuarioId}")]
+        public async Task<ActionResult<List<Usuario>>> ObtenerUsuariosDoctoresAsistentes(int usuarioId)
+        {
+            bool usuarioActualExiste = await _context.Usuarios.AnyAsync(u => u.Id == usuarioId);
+            if (!usuarioActualExiste)
+            {
+                return NotFound("El usuario actual no existe.");
+            }
+
+            var usuarios = await _context.Usuarios.ToListAsync();
+            // Filtrar usuarios por roles específicos ("Doctor" y "Asistente")
+            var usuariosConRoles = usuarios.Where(u => u.Rol == (Int32)Constants.DentalRole.doctor || u.Rol == (Int32)Constants.DentalRole.asistente).ToList();
+
+            return usuariosConRoles;
+        }
+
+        [HttpGet]
         [Route("Conversacion")]
-        public async Task<ActionResult<IEnumerable<Mensaje>>> ObtenerConversacion(int usuarioId, int otroUsuarioId)
+        public async Task<ActionResult<List<Mensaje>>> ObtenerConversacion(int usuarioId, int otroUsuarioId)
         {
             if (usuarioId == otroUsuarioId)
             {

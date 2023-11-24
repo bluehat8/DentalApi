@@ -2,6 +2,13 @@
 {
     public class Constants
     {
+        public enum DentalRole
+        {
+            admin = 0,
+            cliente = 1,
+            doctor = 2,
+            asistente = 3
+        }
         public enum DentalMessageStatusEnum
         {
             pendiente = 1,
