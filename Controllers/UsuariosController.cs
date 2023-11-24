@@ -77,16 +77,26 @@ namespace DentalApi.Controllers
             return usuarioDto;
         }
 
-        // POST: api/Usuarios
-        [HttpPost]
+        [HttpPost("crearUsuario")]
         public async Task<ActionResult<Models.Usuario>> CreateUsuario(Usuario usuario)
         {
-            usuario.Contraseña = Encriptado.EncryptPassword(usuario.Contraseña);
+            try
+            {
+                usuario.Telefono = 1;
+                usuario.FechaCreacion = DateTime.Now;
+                usuario.FechaModificacion = DateTime.Now;
+                usuario.FechaNacimiento = DateTime.Now;
+                usuario.Contraseña = Encriptado.EncryptPassword(usuario.Contraseña);
 
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
+                _context.Usuarios.Add(usuario);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
+                return Ok(new { id = usuario.Id, message = "Cuenta registrada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Ocurrió un error al crear el usuario", exception = ex.Message });
+            }
         }
 
         // PUT: api/Usuarios/5

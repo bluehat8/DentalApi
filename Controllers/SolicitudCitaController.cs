@@ -1,4 +1,5 @@
 ﻿using DentalApi.DTOs;
+using DentalApi.HelperModels;
 using DentalApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,10 +43,12 @@ namespace DentalApi.Controllers
                                             TipoCita = sc.TipoCita,
                                             MotivoCita = sc.MotivoCita,
                                             Estado = sc.Estado,
+                                            EstadoValue = HelpherMethods.GetStatusText(sc.Estado)
                                         }).ToListAsync();
 
             return Ok(solicitudesDto);
         }
+
 
 
         [HttpGet("getSolicitudesCita")]
@@ -66,6 +69,7 @@ namespace DentalApi.Controllers
                                             TipoCita = sc.TipoCita,
                                             MotivoCita = sc.MotivoCita,
                                             Estado = sc.Estado,
+                                            EstadoValue = HelpherMethods.GetStatusText(sc.Estado)
                                         }).Where(x => x.Estado != (Int32)Constants.DentalSolicitudCitaStatus.cancelada).ToListAsync();
 
             return Ok(solicitudesDto);
@@ -94,7 +98,7 @@ namespace DentalApi.Controllers
                 TimeSpan hora = fecha.TimeOfDay;
                 solicitud.Hora = hora;
 
-                solicitud.Estado = solicitudDto.Estado;
+                solicitud.Estado = (Int32)Constants.DentalSolicitudCitaStatus.pendiente;
                 solicitud.FechaCreacion = DateTime.Now;
                 solicitud.FechaModificacion = DateTime.Now;
                 solicitud.Activo = true;
@@ -194,6 +198,36 @@ namespace DentalApi.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
+                var usuario = await _dbContext.SolicitudCita
+                .Where(s => s.Id == id)
+                .Join(
+                    _dbContext.Clientes,
+                    solicitud => solicitud.PacienteId,
+                    cliente => cliente.Id,
+                    (solicitud, cliente) => new { solicitud, cliente }
+                )
+                .Join(
+                    _dbContext.Usuarios,
+                    sc => sc.cliente.Usuario,
+                    usuario => usuario.Id,
+                    (sc, usuario) => usuario
+                )
+                .FirstOrDefaultAsync();
+
+                Notificacione notificacion = new Notificacione()
+                {
+                    Usuario = usuario.Id,
+                    Asunto = "Solicitud de Cita Aceptada",
+                    Fecha = solicitudCita.Fecha,
+                    Cuerpo = $"Su solicitud de cita por el motivo de '{solicitudCita.MotivoCita}' ha sido aceptada para el día {solicitudCita.Fecha}. Lo estaremos esperando",
+                    Estado = (Int32)Constants.DentalNotificationsStatusEnum.pendiente,
+                    FechaCreacion = DateTime.Now,
+                    FechaModificacion = DateTime.Now,
+                };
+
+                _dbContext.Notificaciones.Add(notificacion);
+                await _dbContext.SaveChangesAsync();
+
                 return NoContent();
             }
             catch (Exception ex)
@@ -239,9 +273,9 @@ namespace DentalApi.Controllers
                 Notificacione notificacion = new Notificacione()
                 {
                     Usuario = usuario.Id,
-                    Asunto = "Solicitud aceptada",
+                    Asunto = "Solicitud rechazada",
                     Fecha = solicitudCita.Fecha,
-                    Cuerpo = $"Su solicitud de cita por el motivo de {solicitudCita.MotivoCita} ha sido rechazada para el día {solicitudCita.Fecha}. Lo sentimos",
+                    Cuerpo = $"Su solicitud de cita por el motivo de '{solicitudCita.MotivoCita}' ha sido rechazada para el día {solicitudCita.Fecha}. Lo sentimos",
                     Estado = (Int32)Constants.DentalNotificationsStatusEnum.pendiente,
                     FechaCreacion = DateTime.Now,
                     FechaModificacion = DateTime.Now,
