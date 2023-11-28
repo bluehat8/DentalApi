@@ -113,17 +113,14 @@ namespace DentalApi.Controllers
                 _context.Tratamientos.Remove(tratamiento);
                 await _context.SaveChangesAsync();
 
-                // Después de eliminar, obtén la lista actualizada de tratamientos
                 var tratamientosActualizados = await _context.Tratamientos.ToListAsync();
 
-                // Devuelve la lista actualizada como parte de la respuesta
                 return Ok(tratamientosActualizados);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error interno del servidor al eliminar tratamiento: {ex.Message}");
 
-                // Si se produce un error, devuelve la lista actualizada sin cambios
                 var tratamientosNoActualizados = await _context.Tratamientos.ToListAsync();
                 return StatusCode(500, tratamientosNoActualizados);
             }
