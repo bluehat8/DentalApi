@@ -94,11 +94,17 @@ namespace DentalApi.Controllers
                     TipoCita = solicitudDto.TipoCita
                 };
 
-                DateTime fecha = DateTime.ParseExact(solicitudDto.Hora, "HH:mm", CultureInfo.InvariantCulture);
-                TimeSpan hora = fecha.TimeOfDay;
-                solicitud.Hora = hora;
+                if (TimeSpan.TryParseExact(solicitudDto.Hora, "HH:mm", CultureInfo.InvariantCulture, out TimeSpan hora))
+                {
+                    solicitud.Hora = hora;
+                }
+                else
+                {
+                    
+                    solicitud.Hora = TimeSpan.Zero;
+                }
 
-                solicitud.Estado = (Int32)Constants.DentalSolicitudCitaStatus.pendiente;
+            solicitud.Estado = (Int32)Constants.DentalSolicitudCitaStatus.pendiente;
                 solicitud.FechaCreacion = DateTime.Now;
                 solicitud.FechaModificacion = DateTime.Now;
                 solicitud.Activo = true;
