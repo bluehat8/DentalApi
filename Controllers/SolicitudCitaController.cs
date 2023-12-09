@@ -1,9 +1,11 @@
 ﻿using DentalApi.DTOs;
 using DentalApi.HelperModels;
 using DentalApi.Models;
+using DentalApi.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace DentalApi.Controllers
 {
@@ -48,6 +50,91 @@ namespace DentalApi.Controllers
 
             return Ok(solicitudesDto);
         }
+
+        /* [HttpGet("solicitudes-cita-filtro/{usuarioId}")]
+         public async Task<IActionResult> GetAppointmentRequestsByUserId(int usuarioId, [FromQuery] PaginacionModel paginacion, [FromQuery] int? tipoCita)
+         {
+             try
+             {
+                 var usuario = await _dbContext.Usuarios.Where(u => u.Id == usuarioId && u.Rol == 1).FirstOrDefaultAsync();
+
+                 if (usuario == null)
+                     return BadRequest("Usuario no encontrado o no es cliente");
+
+                 var totalElementos = await _dbContext.SolicitudCita.Join(_dbContext.Clientes,sc => sc.PacienteId, c => c.Id, (sc, c) => new { SolicitudCita = sc, Paciente = c }).Where(x => x.Paciente.Usuario == usuarioId).CountAsync();
+
+                 var solicitudesDto = await _dbContext.Clientes.Where(c => c.Usuario == usuarioId).SelectMany(c => c.SolicitudCita.Where(sc => tipoCita == null || sc.TipoCita == tipoCita).OrderByDescending(sc => sc.Fecha)
+                 .Select(sc => new SolicitudCitumDto
+                    {
+                        Id = sc.Id,
+                        Fecha = sc.Fecha,
+                        Hora = sc.Hora.ToString(),
+                        TipoCita = sc.TipoCita,
+                        MotivoCita = sc.MotivoCita,
+                        Estado = sc.Estado,
+                        EstadoValue = HelpherMethods.GetStatusText(sc.Estado)
+                    })).Skip((paginacion.Pagina - 1) * paginacion.TamanoPagina).Take(paginacion.TamanoPagina).ToListAsync();
+
+                 var respuesta = new
+                 {
+                     TotalElementos = totalElementos,
+                     PaginaActual = paginacion.Pagina,
+                     TamanoPagina = paginacion.TamanoPagina,
+                     Solicitudes = solicitudesDto
+                 };
+
+                 return Ok(respuesta);
+             }
+             catch (Exception ex)
+             {
+                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+             }
+         }*/
+
+        [HttpGet("solicitudes-cita-filtro/{usuarioId}")]
+        public async Task<IActionResult> GetAppointmentRequestsByUserId(int usuarioId, [FromQuery] SolicitudCitaPagination filtroPaginacion)
+        {
+            try
+            {
+                var usuario = await _dbContext.Usuarios.Where(u => u.Id == usuarioId && u.Rol == 1).FirstOrDefaultAsync();
+
+                if (usuario == null)
+                    return BadRequest("Usuario no encontrado o no es cliente");
+
+                var servicio = new PaginacionService<SolicitudCitum>(_dbContext);
+
+                Expression<Func<SolicitudCitum, bool>> filtro = x => (filtroPaginacion == null) || (filtroPaginacion.TipoCita == null || x.TipoCita == filtroPaginacion.TipoCita) &&
+                    (filtroPaginacion.MotivoCita == null || x.MotivoCita == filtroPaginacion.MotivoCita);
+
+                Expression<Func<SolicitudCitum, SolicitudCitumDto>> mapeo = x => new SolicitudCitumDto
+                {
+                    Id = x.Id,
+                    Fecha = x.Fecha,
+                    Hora = x.Hora.ToString(),
+                    TipoCita = x.TipoCita,
+                    MotivoCita = x.MotivoCita,
+                    Estado = x.Estado,
+                    EstadoValue = HelpherMethods.GetStatusText(x.Estado)
+                };
+
+                var resultado = await servicio.ObtenerPaginaAsync(filtro, mapeo, filtroPaginacion);
+
+                var respuesta = new
+                {
+                    TotalElementos = resultado.TotalElementos,
+                    PaginaActual = resultado.PaginaActual,
+                    TamanoPagina = resultado.TamanoPagina,
+                    Elementos = resultado.Elementos
+                };
+
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
 
 
 
